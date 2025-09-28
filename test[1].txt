@@ -1,0 +1,517 @@
+Practical 1: LED Pattern
+
+import RPi.GPIO as GPIO
+import time
+
+numTimes = int(input("Enter total number of times to blink: "))
+speed = float(input("Enter length of each blink in seconds: "))
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(11, GPIO.OUT)
+
+def blink(numTimes, speed):
+    for i in range(0, numTimes):
+        print("Iteration:", (i+1))
+        GPIO.output(11, True)
+        time.sleep(speed)
+        GPIO.output(11, False)
+        print("Iteration: ",(i+1))
+        time.sleep(speed)
+
+blink(numTimes, speed)
+
+GPIO.cleanup()
+print("Done")
+
+.Connections:
+  GPIO pin 6 to smaller end of led
+  GPIO pin 11 to bigger end of led / pin 13 for temporary use   
+
+////////////////////////////////////////////////
+Practical 2 : Pi-Camera
+
+Implement the following commands in terminal:
+ sudo raspi-config
+#Enable SSH and Camera in Interface 
+#Finish and reboot
+ libcamera-hello # ctrl+c to stop
+ libcamera-still-o image.jpg
+ libcamera-vid-o video.h264 -+1000
+
+Run the code:
+
+from picamera2 import Picamera2
+import time
+import os
+
+picam2= Picamera2()
+picam2.preview_configuration.size= (1280,720)
+picam2.preview_configuration.main.format="RGB888"
+picam2.configure("preview")
+
+picam2.start()
+time.sleep(2)
+
+#correct file path
+filename="/home/admin/Pictures/photo.jpg"
+
+#cature the image
+picam2.capture_file(filename)
+print(f"photo saved as{filename}")
+
+#open image viewer
+os.system(f"xdg-open{filename}")
+
+////////////////////////////////////////////////////////
+
+PRACTICAL - 3 Controlling Raspberry Pi with Telegram.
+
+Step 1: Open Telegram app in your system or mobile
+        Start "BotFather"
+Step 2: Open "BotFather" and give the following prompt:
+        /start
+  	/newbot
+	provide bot name. for eg: Salman
+	provide username. for eg: Salmanfaris_bot
+Step 3: Copy your bot token.
+Step 4: open raspberry terminal and execute following commands:
+	sudo apt-get install python-pip
+	sudo apt install python3-venv
+	python3 -m venv myenv
+	source myenv/bin/activate
+ It should look like :- (myenv) pi@raspberrypi:- $
+	pip install telepot
+     	pip install RPi.GPIO
+STEP 5:-enter below commands in terminal
+
+	git clone https://github.com/your_botName/TelegramBot.git
+
+	cd TelegramBot
+
+	nano telegrambot.py
+
+	bot = telepot.Bot('your_bot_token')
+
+Step 6: paste the following code in telegrambot.py
+	
+import sys
+import time
+import random
+import datetime
+import telepot
+import RPi.GPIO as GPIO
+#LED
+def on(pin):
+    	GPIO.output(pin,GPIO.HIGH)
+	return
+def off(pin):
+	GPIO.output(pin,GPIO.LOW)
+	return
+# to use Raspberry Pi board pin numbers
+GPIO.setmode(GPIO.BOARD)
+# set up GPIO output channel
+GPIO.setup(11, GPIO.OUT)
+
+def handle(msg):
+	chat_id = msg['chat']['id']
+	command = msg['text']
+
+	print 'Got command: %s'% command
+
+	if command =='on':
+		bot.sendMessage(chat_id, on(11))
+	elif command =='off':
+		bot.sendMessage(chat_id, off(11))
+
+bot = telepot.Bot('Bot Token')
+bot.message_loop(handle)
+print 'I am listening...'
+
+while 1:
+    time.sleep(10)
+
+Step 7: Connections
+
+Step 8: run code:
+         
+	 python telegrambot.py
+
+Step 7: Open telegram bot
+	
+	/start
+	/on
+	/off
+
+///////////////////////////////////////////////////////////
+PRACTICAL – 4 Install window
+
+Install Windows 10/11 on Raspberry Pi 4 (ARM64)
+
+ Hardware Required:
+
+Raspberry Pi 4 (4GB or 8GB recommended, 2GB possible but very slow).
+
+Storage options:
+
+Option 1: microSD card (≥32GB, Class 10).
+
+Option 2 (recommended): USB 3.0 SSD (faster & more reliable).
+
+HDMI Monitor, Keyboard, Mouse, Power Supply.
+
+(Optional) USB Ethernet adapter or supported Wi-Fi dongle.
+
+Step 1: Download WOR Tool
+
+1. On your Windows PC, download the latest pre-release of WOR (Windows on Raspberry):
+👉 WOR Downloads
+
+2. Extract the downloaded files.
+
+Step 2: Prepare a Windows ARM64 ISO
+
+1. Go to 👉 UUPDump.net.
+
+2. Select Windows 10 ARM64 or Windows 11 ARM64 (choose the latest stable build).
+
+3. Download the UUPDump script.
+
+4. Run the script on your Windows PC.
+
+It will download required files directly from Microsoft.
+
+At the end, it creates a Windows ARM64 ISO file.
+
+Step 3: Install Windows using WOR
+
+1. Insert your microSD card or SSD into your Windows PC.
+
+2. Run WOR.exe.
+
+3. Follow the wizard:
+
+Step 1: Select your target device (SD card or SSD).
+
+Step 2: Select the Windows ARM64 ISO you built.
+
+Step 3: Choose device type → Raspberry Pi 4.
+
+Step 4: Provide UEFI firmware & drivers (WOR downloads them automatically).
+
+Step 5: Confirm installation settings.
+
+4. WOR will now flash the Windows image to your storage device.
+
+Time: 30–60 minutes depending on your storage speed.
+
+Step 4: Boot Raspberry Pi 4
+
+1. Insert the prepared storage device into your Raspberry Pi 4.
+
+2. Power it on → It will first load into the UEFI firmware screen.
+
+3. Go to UEFI Settings → Change boot order to make your SD/SSD the first boot option.
+
+4. Save & reboot.
+
+Step 5: Windows Setup
+
+1. Windows setup will begin.
+
+Select language, region, keyboard layout.
+
+Sign in with or skip Microsoft account.
+Configure preferences.
+2. For network access:
+Use a USB to Ethernet adapter, or
+Use a compatible Wi-Fi dongle.
+3. On the desktop, install Microsoft Edge by double-clicking the shortcut.
+
+///////////////////////////////////////////////////////////
+
+PRACTICAL – 5 Raspberry Pi GPS Module Interfacing.
+STEP 1 :- (Create a virtual environment)
+1) Installing the venv module:-
+    	sudo apt install python3-venv
+2) Creating a new virtual environment. myenv is user-defined name
+	python3 -m venv myenv
+3) Activate the Virtual Environment
+	source myenv/bin/activate
+4) It should look like :- (myenv) pi@raspberrypi:- $
+(If virtual environment is already created just activate the environment)
+
+STEP 2 :- Enter the following commands one by one, pressing Enter after each.
+
+dtparam=spi=on
+dtoverlay=pi3-disable-bt
+core_freq=250
+enable_uart=1
+force_turbo=1
+sudo systemctl stop serial-getty@ttyS0.service
+sudo systemctl disable serial-getty@ttyS0.service
+sudo systemctl enable serial-getty@ttyAMA0.service
+
+STEP 3 :- Installing minicom
+sudo apt-get install minicom
+
+STEP 4 :- Installing pynmea2
+pip install pynmea2 --break-system-packages
+
+STEP 5 :-
+sudo cat /dev/ttyS0
+(This will run in the background. To stop this press ctrl + C)
+
+STEP 6 :-
+code:
+import time
+import serial
+import string
+import pynmea2
+import RPi.GPIO as gpio #if error here use command:- pip install Rpi.GPIO
+gpio.setmode(gpio.BCM)
+port ="/dev/ttyS0" # the serial port to which the pi is connected.
+
+#create a serial object
+ser = serial.Serial(port, baudrate = 9600, timeout = 0.5)
+while 1:
+	try:
+	   data = ser.readline()
+	   print(data)
+	except:
+	   print('loading')
+#wait for the serial port to churn out data
+
+if data[0:6] == '$GPRMC':
+    msg = pynmea2.parse(data)
+    print msg
+    time.sleep(2)
+
+STEP 7:- To deactivate virtual environment
+    deactivate
+
+///////////////////////////////////////////////////////
+Practical 6
+
+Aim: Displaying Time over 4-Digit 7-Segment Display using Raspberry Pi.
+
+Connection scheme Raspberry Pi
+
+Step 1: Open the terminal and enter the following command.
+
+pip install RPi.GPIO --break-system-packages
+
+
+Download the script with the command:
+
+https://github.com/IoT-Practicals/7Segment-Display
+
+Step 2: Type the following python program in Thonny.
+import sys
+import time
+import datetime
+import RPi.GPIO as GPIO
+import tml1637
+
+GPIO.setmode(GPIO.BCM) # or GPIO.BOARD depending on your wiring
+
+Display = tml1637.TM1637()
+Display.Clear()
+Display.SetBrightness(1)
+
+while True:
+     now = datetime.datetime.now()
+     hour = now.hour
+     minute = now.minute
+     second = now.second
+     currenttime = [int(hour / 10), hour % 10, int(minute / 10), minute % 10]
+     Display.Show(currenttime)
+     Display.ShowDoublepoint(second % 2)
+     time.sleep(1)
+
+//////////////////////////////////////////////////////////////
+Practical 7
+
+Aim: IoT based Web Controlled Home Automation using Raspberry Pi
+
+Connection scheme Raspberry Pi
+
+GND 6
+VCC 2
+IN1 26
+
+Step 1: Type the following python program in Thonny.
+
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+from time import sleep
+relay_pin=26
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(relay_pin,GPIO.OUT)
+GPIO.output(relay_pin,1)
+try:
+  while True:
+     GPIO.output(relay_pin,0)
+     sleep(5)
+     GPIO.output(relay_pin,1)
+     sleep(5)
+except KeyboardInterrupt:
+     pass
+     GPIO.cleanup()
+
+//////////////////////////////////////////////
+
+Practical 8
+
+Aim: Raspberry Pi Based Oscilloscope
+
+Step 1: Enter the following commands:
+
+sudo raspi-config #(enable i2c)
+pip install board --break-system-packages
+sudo pip install drawnow --break-system-packages
+sudo apt-get install -y i2c-tools python3-smbus
+python3 -m pip install --upgrade --no-cache-dir adafruit-blinka adafruit-circuitpython-busdevice
+adafruit-circuitpython-ads1x15 --break-system-packages
+
+Step 2: Download the script with the command:
+https://github.com/bhoomikapansare/Oscilloscope.git
+
+///////////////////////////////////////////////////////
+Practical 9
+
+Aim: Interfacing Raspberry Pi with RFID
+
+1. Enable I2C on Raspberry Pi
+ Run in terminal:
+
+       sudo raspi-config
+
+ Go to:
+Interfacing Options → I2C → Enable it.
+
+2. Install Required Packages
+Run the following commands:
+
+        sudo apt-get install libusb-dev libpcsclite-dev i2c-tools
+
+3. Download and Extract libnfc Library
+
+cd ~
+wget http://dl.bintray.com/nfc-tools/sources/libnfc-1.7.1.tar.bz2
+tar -xf libnfc-1.7.1.tar.bz2
+
+4. Compile and Install libnfc
+
+cd libnfc-1.7.1
+./configure --prefix=/usr --sysconfdir=/etc
+make
+sudo make install
+
+5. Configure NFC Settings
+Create and edit configuration file:
+
+sudo mkdir /etc/nfc
+sudo nano /etc/nfc/libnfc.conf
+
+Paste the following content:
+allow_autoscan = true
+allow_intrusive_scan = false
+
+log_level = 1
+device.name = "_PN532_I2c"
+device.connstring ="pn532_i2c:/dev/i2c-1"
+
+Save and exit (Ctrl + O, Enter, then Ctrl + X).
+
+6. Hardware Wiring
+Set PN532 RFID module to I2C mode using switch:
+    SEL0 = HIGH, SEL1 = LOW
+Connect as:
+
+PN532 Raspberry Pi
+5V Pin 4 (5V)
+GND Pin 6 (GND)
+SDA Pin 3 (GPIO 2)
+SCL Pin 5 (GPIO 3)
+
+7. Check Connection
+. Detect I2C device:
+     i2cdetect -y 1
+
+. List NFC devices:
+
+      nfc-list
+
+. Scan RFID tag:
+
+      nfc-poll
+
+Python Code for Reading RFID:
+Save this code as rfid_reader.py:
+
+import subprocess
+import time
+
+def nfc_raw():
+    lines = subprocess.check_output("/usr/bin/nfc-poll",stderr=open('/dev/null','w'))
+
+    return lines
+
+def read_nfc():
+   lines = nfc_raw()
+   return lines
+
+try:
+  while True:
+    myLines = read_nfc()
+    buffer = []
+    for line in myLines.splitlines():
+      line_content = line.split()
+      if(not line_content[0] =='UID'):
+        pass
+      else:
+        buffer.append(line_content)
+str = buffer[0]
+id_str = str[2]+str[3]+str[4]+str[5]
+print(id_str)
+
+except KeyboardInterrupt:
+   pass
+
+Run the code:
+python rfid_reader.py
+
+///////////////////////////////////////////////
+
+Practical 10: fingerprint
+
+Enter the following commands in terminal.
+
+ sudo raspi-config
+ Go to Interfacing options -&gt;I2C &amp; SPI -&gt; Enable it.
+ pip install pyfingerprint –break-system-packages
+ ls /dev/ttyUSB*
+
+If required enter the following commands
+
+ sudo apt-get -f install
+ sudo usermod -a -G dialout pi
+
+If any module error after doing these steps so do the below steps:
+
+Sudo pip3 install pyfingerprint
+
+Then write the code in Python Thonny IDLE and save the Program with suitable name
+with the extension .py
+
+Download Script using following Command:
+
+https://github.com/bhoomikapansare/fingerprint.git
+
+
+Note : Don’t forget to enable the the SPI and I2c.
+
+	
+ 	
+
