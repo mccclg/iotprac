@@ -1,0 +1,243 @@
+PRACTICAL NO.1.b
+
+Folder python
+
+main.py(file name)
+
+print("Hello from Inside Docker!")
+
+Dockerfile(file name)
+
+FROM python:3.13-slim
+ENV DISPLAY=:0
+RUN apt-get update && apt-get install -y python3-tk
+WORKDIR /app
+COPY main.py .
+CMD ["python","main.py"]
+
+Terminal command:-
+cd python
+docker --version
+docker build -t python_main .
+docker run  python_main
+
+////////////////////////////////////////////////////////////
+PRACTICAL NO.2
+
+Folder python
+
+main.py(file name)
+Code:
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+# In-memory storage for to-dos
+todos = []
+# Create
+@app.route('/', methods=['POST'])
+def create_todo():
+    todo = request.get_json()
+    todos.append(todo)
+    return jsonify(todo), 201
+
+# Read All
+@app.route('/', methods=['GET'])
+def get_all_todos():
+    return jsonify(todos)
+
+
+# Read One
+@app.route('//<int:todo_id>', methods=['GET'])
+def get_todo(todo_id):
+    for todo in todos:
+        if todo['id'] == todo_id:
+            return jsonify(todo)
+    return jsonify({'error': 'To-Do not found'}), 404
+
+
+# Update
+@app.route('//<int:todo_id>', methods=['PUT'])
+def update_todo(todo_id):
+    updated_data = request.get_json()
+    for i, todo in enumerate(todos):
+        if todo['id'] == todo_id:
+            todos[i] = updated_data
+            return jsonify(updated_data)
+    return jsonify({'error': 'To-Do not found'}), 404
+
+
+# Delete
+@app.route('//<int:todo_id>', methods=['DELETE'])
+def delete_todo(todo_id):
+    for i, todo in enumerate(todos):
+        if todo['id'] == todo_id:
+            del todos[i]
+            return jsonify({'message': 'Deleted successfully'})
+    return jsonify({'error': 'To-Do not found'}), 404
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+Command:-
+1st Terminal:- python main.py
+
+2nd terminal:- 
+
+curl.exe -X POST http://127.0.0.1:5000 -H "Content-Type: application/json" -d '{\"id\": 1, \"title\": \"Learn Flask\", \"completed\": false}'
+
+curl.exe http://127.0.0.1:5000
+
+curl.exe http://127.0.0.1:5000/1
+
+curl.exe -X PUT http://127.0.0.1:5000/1 -H "Content-Type: application/json" -d '{\"id\": 1, \"title\": \"Learn Flask\", \"completed\": true}'
+
+curl.exe -X DELETE http://127.0.0.1:5000/1 
+
+////////////////////////////////////////////////////////////
+PRACTICAL NO.3
+
+a. Create a Git repository, initialize it, and add a Python project
+ Step 1: Create a Project Directory
+mkdir git-prac3
+cd git-prac3
+ Step 2: Create a Sample Python Project
+echo "print('Hello from main branch')" > app.py
+ Step 3: Initialize Git
+git init
+ Step 4: Add Files and Commit
+git add .
+git commit -m "Initial commit with basic app.py"
+ Step 5: Create a Remote Repo on GitHub
+ Go to https://github.com
+Click New Repository → Name: git-prac3
+ DO NOT initialize with README
+ Step 6: Add Remote and Push(in VSCode)
+git remote add origin https://github.com/YOUR_USERNAME/git-prac3.git
+git branch -M main
+git push -u origin main
+
+b. Demonstrate branching and pull requests
+ Step 1: Create a Feature Branch
+git checkout -b feature/greet-user
+ Step 2: Add New Code
+Edit app.py:
+name = input("Enter your name: ")
+print(f"Hello, {name}!")
+Then in Powershell:
+git add app.py
+git commit -m "Add user greeting feature"
+git push origin feature/greet-user
+ Step 3: Create a Pull Request
+1. Go to your repo on GitHub
+2. You’ll see a prompt: “Compare & pull request”
+3. Click it → Add a description → Click “Create pull request”
+4. Review and click “Merge pull request”
+5. Confirm merge and delete branch (optional)
+
+////////////////////////////////////////////////////////////
+
+PRACTICAL NO.4
+
+A) Set up a virtual machine on a cloud provider or locally (e.g., using
+VMWare or Azure).
+
+1) Download & Install VMware Workstation Player (Windows)
+
+ Get it from VMware website.
+ Run installer (.exe) as Admin → accept defaults → Install → Reboot if asked.
+
+2) Get Guest OS ISO
+
+Download official Windows ISO (Microsoft).
+Save to `C:\ISOs`.
+
+3) Create the VM (GUI)
+
+1. Open Player → **Create a New Virtual Machine**.
+2. Select **Installer disc image (ISO)** → browse to ISO.
+3. Choose OS type/version (auto-detected).
+4. Enter Name & Location.
+5. Set Disk: **40–60 GB**, single file.
+6. **Customize Hardware**:
+   * RAM: 4 GB (light) / 8 GB (Win10/11).
+   * CPU: 1–2 cores.
+   * Network: NAT or Bridged.
+   * CD/DVD: ISO selected.
+   * Others: leave default; enable 3D if GUI.
+7. Close → Finish.
+
+4) Power On & Install OS
+
+ Play VM → follow installer (language, keyboard, user, partition full disk).
+ If it reboots into installer → disconnect ISO (Player → Devices → CD/DVD → Settings).
+
+5) Install VMware Tools
+
+Menu: **Player → Manage → Install VMware Tools**.
+Run installer in guest → reboot.
+
+6) Enable Shared Features
+
+Shared Folders: Player → Manage → VM Settings → Options → Shared Folders → Add & Always enabled.
+
+ Windows guest: appears in This PC.
+ Linux guest: under `/mnt/hgfs`.
+Clipboard/Drag & Drop**: works if VMware Tools installed.
+
+7) Snapshots & Backups
+
+Pro: VM → Snapshot → Take Snapshot.
+Player: no snapshots → backup manually by copying VM folder (`.vmx`, `.vmdk`).
+
+B) Configure networking concepts like virtual networks (Vnet), IPaddresses, and ports.
+
+Networking options
+1.)NAT (default): VM shares host IP for outbound internet — easy and safe. Good for
+most beginners.
+2.)Bridged: VM appears as a device on your LAN with its own IP — good for server
+testing or remote access.
+3.)Host-only: VM ↔ host only (no internet) — useful for isolated test networks.
+Set these in Player → Manage → Virtual Machine Settings → Network Adapter.
+
+////////////////////////////////////////////////////////////
+
+PRACTICAL NO.5 
+Dockerize a Flask/FastAPI Application:
+
+
+1. Create Your Flask App
+Create a folder docker-flask-app and inside it, create:
+app.py (in vscode)
+from flask import Flask
+app = Flask(__name__)
+@app.route('/')
+def hello():
+ return 'Hello from Dockerized Flask!'
+if __name__ == '__main__':
+ app.run(host='0.0.0.0', port=5000)
+requirements.txt (in vscode)
+flask
+2. Create <Dockerfile> (in vscode)
+Note: Make sure you have Docker Extension installed in VSCode before
+exactly creating Dockerfile
+# Use official Python base image
+FROM python:3.12-slim
+# Set working directory
+WORKDIR /app
+# Copy app files
+COPY . . # Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+# Run the app
+CMD ["python", "app.py"]
+3. Build the Docker Image (in vscode terminal)
+Open VS Code terminal in the project folder and run:
+docker build -t [username]/myapp:latest .
+4. Run the Container (Use Port 5050 if 5000 is occupied) (in vscode terminal)
+docker run -d -p 5050:5000 [username]/myapp:latest
+on browser
+Then visit: http://localhost:5050
+You should see: Hello from Dockerized Flask!
+
+
